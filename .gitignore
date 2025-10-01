@@ -4,6 +4,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Временные файлы
+*.log
+*.tmp
+*.bak
+~$*        # временные файлы Word/Excel
+*.docx     # исключить Word-документы
+
 ### STS ###
 .apt_generated
 .classpath
