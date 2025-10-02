@@ -1,12 +1,14 @@
 package com.study.segment_service.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Data
 public class User {
     @Id
     @Column(updatable = false, nullable = false)
