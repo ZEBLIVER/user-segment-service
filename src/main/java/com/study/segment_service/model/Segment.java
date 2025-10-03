@@ -19,4 +19,6 @@ public class Segment {
 
     @ManyToMany(mappedBy = "segments")
     private Set<User> users = new HashSet<>();
+
+
 }
