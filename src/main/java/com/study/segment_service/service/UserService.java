@@ -14,12 +14,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final SegmentService segmentService;
 
     @Autowired
-    public UserService(UserRepository userRepository, SegmentService segmentService) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.segmentService = segmentService;
     }
 
     public User createUser(User user) {
