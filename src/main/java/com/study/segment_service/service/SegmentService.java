@@ -9,6 +9,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 @Service
 public class SegmentService {
@@ -83,7 +87,7 @@ public class SegmentService {
     }
 
     @Transactional
-    public void deleteUserFromSegment(String segmentName, Long userId){
+    public void deleteUserFromSegment(String segmentName, Long userId) {
         Segment segment = segmentRepository.findByName(segmentName).
                 orElseThrow(() -> new ResourceNotFoundException(
                         "Сегмент с именем '" + segmentName + "' не существует."
@@ -95,5 +99,26 @@ public class SegmentService {
         user.getSegments().remove(segment);
         segment.getUsers().remove(user);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void distributeUsersToSegment(String segmentName, double percent) {
+        if (percent <= 0 || percent > 100) {
+            throw new IllegalArgumentException(
+                    "Недопустимое значение percent"
+            );
+        }
+        Long segmentId = segmentRepository.findByName(segmentName).
+                orElseThrow(() -> new ResourceNotFoundException(
+                        "Сегмент с именем '" + segmentName + "' не существует."
+                )).getSegment_id();
+
+        List<Long> allUserIds = userRepository.findAllUsersIds();
+        if (allUserIds.isEmpty()) return;
+        Collections.shuffle(allUserIds);
+        int requestCount = (int) Math.round(allUserIds.size() * percent / 100.0);
+        if (requestCount == 0) return;
+        List<Long> selectedUsers = allUserIds.subList(0, requestCount);
+        userRepository.addUsersToSegment(segmentId,selectedUsers);
     }
 }

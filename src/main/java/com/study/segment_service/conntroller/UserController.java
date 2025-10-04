@@ -41,17 +41,4 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @PostMapping("/distribute/{segmentName}")
-    public ResponseEntity<Void> distributeSegment(@PathVariable String segmentName,
-                                                  @RequestBody Double percent) {
-        try {
-            userService.distributeSegment(segmentName,percent);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 }

@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,31 +41,5 @@ public class UserService {
                 .map(segment -> segment.getName())
                 .collect(Collectors.toSet());
     }
-
-    @Transactional
-    public void distributeSegment(String segmentName, double percent) {
-        if (percent <= 0 || percent > 100) {
-            throw new IllegalArgumentException(
-                    "Недопустимое значение percent"
-            );
-        }
-
-        List<User> allUsers = userRepository.findAll();
-
-        if (allUsers.isEmpty()) {
-            return;
-        }
-
-        int requestCount = (int) Math.round(allUsers.size() * percent / 100.0);
-
-        Collections.shuffle(allUsers);
-
-        List<User> selectedUsers = allUsers.subList(0, requestCount);
-
-        for (User user : selectedUsers) {
-            segmentService.addUserToSegment(segmentName, user.getUser_id());
-        }
-    }
-
 
 }

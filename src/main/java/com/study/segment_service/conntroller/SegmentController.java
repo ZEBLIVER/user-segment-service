@@ -43,7 +43,7 @@ public class SegmentController {
         try {
             Segment segment = segmentService.findSegmentById(id);
             return new ResponseEntity<>(segment, HttpStatus.OK);
-        } catch (ResourceNotFoundException  e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -52,19 +52,20 @@ public class SegmentController {
     public ResponseEntity<Void> renameSegment(@PathVariable String segmentName,
                                               @RequestBody String newSegmentName) {
         try {
-            segmentService.renameSegment(segmentName,newSegmentName);
+            segmentService.renameSegment(segmentName, newSegmentName);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException  e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+
     @PutMapping("/{segmentName}/user/{userId}")
     public ResponseEntity<Void> addUserToSegment(@PathVariable String segmentName,
                                                  @PathVariable Long userId) {
         try {
-            segmentService.addUserToSegment(segmentName,userId);
+            segmentService.addUserToSegment(segmentName, userId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -73,9 +74,9 @@ public class SegmentController {
 
     @DeleteMapping("/{segmentName}/user/{userId}")
     public ResponseEntity<Void> deleteUserFromSegment(@PathVariable String segmentName,
-                                      @PathVariable Long userId) {
+                                                      @PathVariable Long userId) {
         try {
-            segmentService.deleteUserFromSegment(segmentName,userId);
+            segmentService.deleteUserFromSegment(segmentName, userId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -83,4 +84,17 @@ public class SegmentController {
 
     }
 
+    @PostMapping("/distribute/{segmentName}")
+    public ResponseEntity<VerifyError> distributeUsersToSegment(
+            @PathVariable String segmentName,
+            @RequestBody Double percent) {
+        try {
+            segmentService.distributeUsersToSegment(segmentName, percent);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
