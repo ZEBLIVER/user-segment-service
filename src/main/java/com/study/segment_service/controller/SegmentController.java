@@ -1,4 +1,4 @@
-package com.study.segment_service.conntroller;
+package com.study.segment_service.controller;
 
 import com.study.segment_service.exeption.ResourceNotFoundException;
 import com.study.segment_service.model.Segment;
