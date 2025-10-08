@@ -22,13 +22,8 @@ class UserServiceTest {
     private UserService userService;
 
     @Mock
-    private SegmentService segmentService;
-    
-    @Mock
     private UserRepository userRepository;
     
-
-
     @Test
     void createUser_SaveAndReturnUser() {
         User testUser = new User();
