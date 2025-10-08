@@ -2,6 +2,7 @@ package com.study.segment_service.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "segments")
 @Data
+@EqualsAndHashCode(exclude = {"users"})
 public class Segment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
