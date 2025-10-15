@@ -1,6 +1,5 @@
 package com.study.segment_service.service;
 
-
 import com.study.segment_service.exeption.ResourceNotFoundException;
 import com.study.segment_service.model.Segment;
 import com.study.segment_service.model.User;
@@ -12,10 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -320,5 +316,78 @@ class SegmentServiceTest {
         );
     }
 
-    
+    @Test
+    void distributeUsersToSegment_PercentIsZero_ThrowsIllegalArgumentException() {
+        String segmentName = "gpt1";
+        double percent = 0.0;
+        assertThrows(IllegalArgumentException.class,
+                () -> segmentService.distributeUsersToSegment(segmentName,percent));
+        verify(segmentRepository,never()).findByName(segmentName);
+        verify(userRepository,never()).findAllUsersIds();
+        verify(userRepository, never()).addUsersToSegment(anyLong(), anyList());
+    }
+
+    @Test
+    void distributeUsersToSegment_PercentGreaterThan100_ThrowsIllegalArgumentException() {
+        String segmentName = "gpt1";
+        double percent = 100.1;
+        assertThrows(IllegalArgumentException.class,
+                () -> segmentService.distributeUsersToSegment(segmentName,percent));
+        verify(segmentRepository,never()).findByName(segmentName);
+        verify(userRepository,never()).findAllUsersIds();
+        verify(userRepository, never()).addUsersToSegment(anyLong(), anyList());
+    }
+
+    @Test
+    void distributeUsersToSegment_SegmentNotFound_ThrowsResourceNotFoundException() {
+        String segmentName = "gpt1";
+        double percent = 50.0;
+        when(segmentRepository.findByName(segmentName)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class,
+                () -> segmentService.distributeUsersToSegment(segmentName,percent));
+        verify(segmentRepository,times(1)).findByName(segmentName);
+        verify(userRepository,never()).findAllUsersIds();
+        verify(userRepository, never()).addUsersToSegment(anyLong(), anyList());
+    }
+
+    @Test
+    void distributeUsersToSegment_EmptyUserList_ReturnsImmediately() {
+        String segmentName = "gpt1";
+        double percent = 50.0;
+        Segment segment = new Segment();
+
+        when(segmentRepository.findByName(segmentName)).thenReturn(Optional.of(segment));
+        when(userRepository.findAllUsersIds()).thenReturn(Collections.emptyList());
+        segmentService.distributeUsersToSegment(segmentName,percent);
+
+        verify(segmentRepository,times(1)).findByName(segmentName);
+        verify(userRepository,times(1)).findAllUsersIds();
+        verify(userRepository, never()).addUsersToSegment(anyLong(), anyList());
+    }
+
+    @Test
+    void distributeUsersToSegment_ResultingCountIsZero_ReturnsImmediately() {
+        String segmentName = "gpt1";
+        Long segmentId = 2L;
+
+        Segment segment = new Segment();
+        segment.setSegment_id(segmentId);
+        segment.setName(segmentName);
+
+        List<Long> allUserIds = new ArrayList<>();
+        for (long i = 1; i <= 100; i++) {
+            allUserIds.add(i);
+        }
+        double zeroPercent = 0.001;
+
+        when(segmentRepository.findByName(segmentName)).thenReturn(Optional.of(segment));
+        when(userRepository.findAllUsersIds()).thenReturn(allUserIds);
+
+        segmentService.distributeUsersToSegment(segmentName, zeroPercent);
+
+        verify(segmentRepository, times(1)).findByName(segmentName);
+        verify(userRepository, times(1)).findAllUsersIds();
+        verify(userRepository, never()).addUsersToSegment(anyLong(), anyList());
+    }
+
 }
